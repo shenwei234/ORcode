@@ -84,7 +84,9 @@
         <h1 id="title">神威二维码生成器</h1>
         <input type="text" id="text" placeholder="输入文字或链接">
         <button onclick="generateQRCode()" id="generateBtn">生成二维码</button>
-        <a href="https://blog.shenwei233.cn"><button onclick="blogQRCode()" id="blog">返回博客</button></a>
+        <a href="https://blog.shenwei233.cn" id="blog">
+            <button>返回博客</button>
+        </a>
         <div id="qrcode"></div>
         <button id="downloadBtn" onclick="downloadQRCode()">下载二维码</button>
         <br>
@@ -124,6 +126,7 @@
                 document.getElementById('text').placeholder = i18next.t('placeholder');
                 document.getElementById('generateBtn').innerText = i18next.t('generate');
                 document.getElementById('downloadBtn').innerText = i18next.t('download');
+                document.getElementById('blog').innerText = i18next.t('blog');
             });
         }
 
