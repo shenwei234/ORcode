@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>神威|二维码生成器</title>
+    <link rel="icon" href="icon/icon.ico">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            background: #007bff;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        #qrcode {
+            margin: 20px 0;
+        }
+
+        #downloadBtn {
+            margin-top: 10px;
+            display: none;
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+        }
+
+        .footer a {
+            color: #006fa7;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 id="title">神威二维码生成器</h1>
+        <input type="text" id="text" placeholder="输入文字或链接">
+        <button onclick="generateQRCode()" id="generateBtn">生成二维码</button>
+        <div id="qrcode"></div>
+        <button id="downloadBtn" onclick="downloadQRCode()">下载二维码</button>
+        <br>
+        <button onclick="setLanguage('en')">English</button>
+        <button onclick="setLanguage('zh')">中文</button>
+    </div>
+
+    <div class="footer">
+        <p>©版权所有为<a href="https://www.shenwei233.cn" style="color:#006fa7">神威</a> | <a href="https://www.shenwei233.cn" style="color:#006fa7">神威</a>提供技术支持 | <a href="https://www.shenwei233.cn/%e5%8f%8b%e6%83%85%e9%93%be%e6%8e%a5" target="_blank" style="color:#006fa7" title="点击查看友情链接">友情链接</a></p>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/i18next/21.6.15/i18next.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        const translations = {
+            en: {
+                title: 'shenwei QR Code Generator',
+                placeholder: 'Enter text or URL',
+                generate: 'Generate QR Code',
+                download: 'Download QR Code'
+            },
+            zh: {
+                title: '神威二维码生成器',
+                placeholder: '输入文字或链接',
+                generate: '生成二维码',
+                download: '下载二维码'
+            }
+        };
+
+        function setLanguage(lang) {
+            i18next.changeLanguage(lang, () => {
+                document.getElementById('title').innerText = i18next.t('title');
+                document.getElementById('text').placeholder = i18next.t('placeholder');
+                document.getElementById('generateBtn').innerText = i18next.t('generate');
+                document.getElementById('downloadBtn').innerText = i18next.t('download');
+            });
+        }
+
+        function detectLanguage() {
+            fetch('https://ipapi.co/json/')
+                .then(response => response.json())
+                .then(data => {
+                    const lang = data.country === 'CN' ? 'zh' : 'en';
+                    setLanguage(lang);
+                });
+        }
+
+        function generateQRCode() {
+            const text = document.getElementById('text').value;
+            if (!text) {
+                alert(i18next.t('placeholder'));
+                return;
+            }
+
+            const qrcodeContainer = document.getElementById('qrcode');
+            qrcodeContainer.innerHTML = ''; 
+
+            const qrcode = new QRCode(qrcodeContainer, {
+                text: text,
+                width: 256,
+                height: 256,
+                correctLevel: QRCode.CorrectLevel.H
+            });
+
+            document.getElementById('downloadBtn').style.display = 'inline-block';
+        }
+
+        function downloadQRCode() {
+            const qrcodeCanvas = document.querySelector('#qrcode canvas');
+            if (!qrcodeCanvas) {
+                alert(i18next.t('generate'));
+                return;
+            }
+
+            const link = document.createElement('a');
+            link.href = qrcodeCanvas.toDataURL('image/png');
+            link.download = 'qrcode.png';
+            link.click();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            i18next.init({
+                lng: 'zh',
+                debug: true,
+                resources: {
+                    en: { translation: translations.en },
+                    zh: { translation: translations.zh }
+                }
+            }, () => {
+                setLanguage('zh');
+                detectLanguage();
+            });
+        });
+    </script>
+</body>
+</html>
